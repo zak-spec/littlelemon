@@ -126,3 +126,30 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+REST_FRAMEWORK = {
+    # 'DEFAULT_RENDERER_CLASSES': [
+    #     'REST_framework.renderers.JSONRenderer',
+    #     'REST_framework.renderers.BrowsableAPIRenderer',
+    #     'rest_framework_xml.renderers.XMLRenderer',
+    # ],
+     'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+        # Puedes añadir más clases de autenticación aquí si las necesitas, separadas por comas
+        # ej: 'rest_framework.authentication.SessionAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': [ # Es buena práctica definir permisos por defecto también
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly', # Ejemplo, ajusta según tus necesidades
+    ],
+    'DEFAULT_THROTTLE_CLASSES': [  # CORREGIDO: Debe ser una lista de rutas de clases
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {    # CORREGIDO: Tu diccionario de tasas va aquí
+        'anon': '60/minute',        # Tasa para usuarios anónimos (usado por AnonRateThrottle)
+        'user': '60/minute',        # Tasa para usuarios autenticados (usado por UserRateThrottle)
+        # Puedes definir más "scopes" de throttle aquí si usas throttles personalizados
+        # con scopes específicos.
+    }
+}
