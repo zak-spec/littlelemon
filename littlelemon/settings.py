@@ -10,22 +10,34 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+from datetime import timedelta
 from pathlib import Path
+import os
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Configurar environ
+env = environ.Env(
+    # Establecer valores por defecto
+    DEBUG=(bool, False),
+    ALLOWED_HOSTS=(list, ["*"]),
+)
+
+# Leer el archivo .env (debe estar en la raíz del proyecto)
+env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-x)tfr5d$0ak4^8txk2gk!cxlh4spb&gohl9a*f210gk#=tme5h'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
 
 # Application definition
@@ -39,6 +51,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'littlelemonAPI',
+    'rest_framework.authtoken', 
+    'djoser',  
+    'rest_framework_simplejwt', 
+    'rest_framework_simplejwt.token_blacklist',  # CORREGIDO: Añadido para manejar tokens JWT revocados
 ]
 
 MIDDLEWARE = [
@@ -76,12 +92,12 @@ WSGI_APPLICATION = 'littlelemon.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME':   'littlelemon',
-        'HOST': '127.0.0.1',
-        'USER': 'root',
-        'PASSWORD': '123456',
-        'PORT':'3306',
+        'ENGINE': env('DB_ENGINE', default='django.db.backends.mysql'),
+        'NAME': env('DB_NAME', default='littlelemon'),
+        'HOST': env('DB_HOST', default='127.0.0.1'),
+        'USER': env('DB_USER', default='root'),
+        'PASSWORD': env('DB_PASSWORD', default='123456'),
+        'PORT': env('DB_PORT', default='3306'),
     }
 }
 
@@ -129,27 +145,39 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 REST_FRAMEWORK = {
-    # 'DEFAULT_RENDERER_CLASSES': [
-    #     'REST_framework.renderers.JSONRenderer',
-    #     'REST_framework.renderers.BrowsableAPIRenderer',
-    #     'rest_framework_xml.renderers.XMLRenderer',
-    # ],
-     'DEFAULT_AUTHENTICATION_CLASSES': (
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+        # 'rest_framework_xml.renderers.XMLRenderer',
+    ],    
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',  # CORREGIDO: Añadido para JWT
         'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',  # CORREGIDO: Añadido para autenticación de sesión
         # Puedes añadir más clases de autenticación aquí si las necesitas, separadas por comas
-        # ej: 'rest_framework.authentication.SessionAuthentication',
-    ),
-    'DEFAULT_PERMISSION_CLASSES': [ # Es buena práctica definir permisos por defecto también
-        'rest_framework.permissions.IsAuthenticatedOrReadOnly', # Ejemplo, ajusta según tus necesidades
+    ),    
+    'DEFAULT_PERMISSION_CLASSES': [
+        # 'rest_framework.permissions.IsAuthenticated',  # Requiere autenticación por defecto
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',  # Permite lectura a todos, pero escritura solo a usuarios autenticados
+        
     ],
     'DEFAULT_THROTTLE_CLASSES': [  # CORREGIDO: Debe ser una lista de rutas de clases
         'rest_framework.throttling.AnonRateThrottle',
         'rest_framework.throttling.UserRateThrottle',
     ],
     'DEFAULT_THROTTLE_RATES': {    # CORREGIDO: Tu diccionario de tasas va aquí
-        'anon': '60/minute',        # Tasa para usuarios anónimos (usado por AnonRateThrottle)
-        'user': '60/minute',        # Tasa para usuarios autenticados (usado por UserRateThrottle)
+        'anon': '100/minute',        # Tasa para usuarios anónimos (usado por AnonRateThrottle)
+        'user': '100/minute',        # Tasa para usuarios autenticados (usado por UserRateThrottle)
         # Puedes definir más "scopes" de throttle aquí si usas throttles personalizados
         # con scopes específicos.
     }
+}
+
+DJOSER = {
+    "USER_ID_FIELD": "username",
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=env.int('JWT_ACCESS_TOKEN_LIFETIME_MINUTES', default=60)),
+    # 'AUTH_HEADER_TYPES': ('token',),
 }

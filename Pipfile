@@ -8,6 +8,9 @@ mysqlclient = "*"
 bleach = "*"
 django = "*"
 djangorestframework = "*"
+djoser = "*"
+djangorestframework-simplejwt = "*"
+django-environ = "*"
 
 [dev-packages]
 

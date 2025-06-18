@@ -24,7 +24,8 @@ class Cart(models.Model):
         unique_together=('MenuItem','user')
     
 class Order(models.Model):
-    user=models.ForeignKey(User,on_delete=models.SET_NULL,related_name="delivery_crew",null=True)
+    user=models.ForeignKey(User,on_delete=models.CASCADE)
+    delivery_crew=models.ManyToManyField(User, related_name="delivery_orders", blank=True)
     status=models.BooleanField(db_index=True,default=0)
     total=models.DecimalField(max_digits=6,decimal_places=2)
     date=models.DateField(db_index=True)

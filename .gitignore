@@ -1,0 +1,128 @@
+# Django #
+*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media
+
+# Entornos virtuales #
+venv/
+ENV/
+env/
+.env
+
+# Archivos de configuración sensibles #
+.env
+.env.*
+!.env.template
+!.env.example
+
+# Base de datos #
+*.sqlite3
+*.db
+
+# Si usas PyCharm #
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Si usas VS Code #
+.vscode/
+*.code-workspace
+
+# Python #
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Bytecode compilado / optimizado / DLL #
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribuciones #
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Archivos de prueba unitaria / cobertura #
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# Traducciones #
+*.mo
+*.pot
+
+# Documentación #
+docs/_build/
+doc/_build/
+
+# PyBuilder #
+target/
+
+# Jupyter Notebook #
+.ipynb_checkpoints
+
+# IPython #
+profile_default/
+ipython_config.py
+
+# Archivos temporales #
+*.bak
+*.swp
+*~
+
+# Archivos específicos del sistema operativo #
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# MySQL #
+*.mysql
+*.sql

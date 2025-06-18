@@ -34,12 +34,12 @@ class MenuItemserializers(BleachCleanMixin, serializers.ModelSerializer):
 class Cartserializers(BleachCleanMixin, serializers.ModelSerializer):
     class Meta:
         model = Cart
-        fields = ['id', 'user', 'menuitem', 'quantity', 'unit_price', 'price']
+        fields = ['id', 'user', 'MenuItem', 'quantity', 'unit_price', 'price']
 
 class Orderserializers(BleachCleanMixin, serializers.ModelSerializer):
     class Meta:
         model = Order
-        fields = ['id', 'user', 'status', 'total', 'date']
+        fields = ['id', 'user', 'delivery_crew', 'status', 'total', 'date']
 
 class OrderItemserializers(BleachCleanMixin, serializers.ModelSerializer):
     class Meta:

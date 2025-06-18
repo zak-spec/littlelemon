@@ -6,7 +6,7 @@ from .serializers import Categoryserializer, MenuItemserializers, Cartserializer
 from .models import Category, MenuItem, Cart, Order, OrderItem
 from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator, EmptyPage
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 from django.contrib.auth.models import User, Group
 from django.utils import timezone
@@ -15,6 +15,7 @@ def hello_world(request):
     return Response("Hello, world!")
 
 @api_view(['GET','POST'])
+# @permission_classes([AllowAny])  # Permitir acceso a todos para GET, pero POST requiere autenticación en configuración global
 def menu_items(request):
     if request.method == 'GET':
         items = MenuItem.objects.select_related('featured').all()
@@ -48,6 +49,7 @@ def menu_items(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 @api_view(["GET", "PATCH", "DELETE"])
+@permission_classes([AllowAny])  # Permitir acceso a todos para GET, pero PATCH y DELETE requieren autenticación en configuración global
 def menu_itemsbuscar(request, id):
     item = get_object_or_404(MenuItem, id=id)
     if request.method == 'GET':
@@ -76,14 +78,21 @@ def secret(request):
     else:
         return Response(status=403)
 
-@api_view()
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def secretv2(request):
+    return Response({"message": "This is a secret message for authenticated users."})
+
+@api_view(['GET'])  # Especificar métodos explícitamente
+@permission_classes([AllowAny])  # Usar AllowAny en lugar de lista vacía
 @throttle_classes([AnonRateThrottle])
 def throttle_check(request):
     return Response({"message": "successful"})
 
-@api_view()
-@permission_classes([IsAuthenticated])
-@throttle_classes([UserRateThrottle])
+
+@api_view(['GET']) 
+@permission_classes([IsAuthenticated]) 
+@throttle_classes([UserRateThrottle]) 
 def throttle_check_auth(request):
     return Response({"message": "message for the logged in users only"})
 
