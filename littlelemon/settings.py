@@ -51,10 +51,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'littlelemonAPI',
-    'rest_framework.authtoken', 
-    'djoser',  
+    # 'rest_framework.authtoken',  # REMOVIDO: Ya no usas TokenAuthentication
+    # 'djoser',  # REMOVIDO: Ya tienes implementación propia de registro/auth
     'rest_framework_simplejwt', 
-    'rest_framework_simplejwt.token_blacklist',  # CORREGIDO: Añadido para manejar tokens JWT revocados
+    'rest_framework_simplejwt.token_blacklist',  # Para manejar tokens JWT revocados
 ]
 
 MIDDLEWARE = [
@@ -149,16 +149,16 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
         # 'rest_framework_xml.renderers.XMLRenderer',
-    ],    
+    ],
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',  # CORREGIDO: Añadido para JWT
-        'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication',  # CORREGIDO: Añadido para autenticación de sesión
-        # Puedes añadir más clases de autenticación aquí si las necesitas, separadas por comas
-    ),    
+        'rest_framework_simplejwt.authentication.JWTAuthentication',  # Para APIs modernas, móviles, SPAs
+        'rest_framework.authentication.SessionAuthentication',       # Para browsable API y testing en navegador
+        # 'rest_framework.authentication.TokenAuthentication',       # Comentado: redundante con JWT (descomentar si necesitas compatibilidad legacy)
+        # Configuración recomendada: JWT + Session es suficiente para la mayoría de casos
+    ),
     'DEFAULT_PERMISSION_CLASSES': [
-        # 'rest_framework.permissions.IsAuthenticated',  # Requiere autenticación por defecto
-        'rest_framework.permissions.IsAuthenticatedOrReadOnly',  # Permite lectura a todos, pero escritura solo a usuarios autenticados
+        'rest_framework.permissions.IsAuthenticated',  # Requiere autenticación por defecto
+        # 'rest_framework.permissions.IsAuthenticatedOrReadOnly',  # Permite lectura a todos, pero escritura solo a usuarios autenticados
         
     ],
     'DEFAULT_THROTTLE_CLASSES': [  # CORREGIDO: Debe ser una lista de rutas de clases
@@ -173,11 +173,38 @@ REST_FRAMEWORK = {
     }
 }
 
-DJOSER = {
-    "USER_ID_FIELD": "username",
-}
+# DJOSER = {
+#     "USER_ID_FIELD": "username",
+# }
+# REMOVIDO: Ya no usas Djoser, tienes implementación propia
 
+# ===== CONFIGURACIÓN JWT FINAL =====
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=env.int('JWT_ACCESS_TOKEN_LIFETIME_MINUTES', default=60)),
-    # 'AUTH_HEADER_TYPES': ('token',),
+    # Usar valor del .env (1 minuto para desarrollo)
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=1),
+    
+    # Duración del refresh token: 7 días
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    
+    # DESACTIVADO: Evitar problemas con blacklist
+    'ROTATE_REFRESH_TOKENS': False,  # ← DESACTIVADO para evitar bugs
+    
+    # DESACTIVADO: Evitar problemas con blacklist
+    'BLACKLIST_AFTER_ROTATION': False,  # ← DESACTIVADO para evitar bugs
+    
+    # Algoritmo de encriptación
+    'ALGORITHM': 'HS256',
+      # Tipos de header Authorization aceptados
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    
+    # Clave de signing (usa SECRET_KEY de Django por defecto)
+    'SIGNING_KEY': SECRET_KEY,
+    
+    # Claims del token más básicos
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+    'TOKEN_TYPE_CLAIM': 'token_type',
+    
+    # SIMPLIFICADO: Solo AccessToken sin configuraciones complejas
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
 }

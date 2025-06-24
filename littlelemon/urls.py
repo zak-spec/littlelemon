@@ -21,8 +21,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('littlelemonAPI.urls')),
-    path('auth/', include('djoser.urls')),  # Djoser authentication URLs
-    path('auth/', include('djoser.urls.authtoken')),  # Djoser token authentication URLs
+    # path('auth/', include('djoser.urls')),  # REMOVIDO: Ya tienes implementación propia
+    # path('auth/', include('djoser.urls.authtoken')),  # REMOVIDO: Ya tienes implementación propia
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/token/blacklist/', TokenBlacklistView.as_view(), name='token_blacklist'),

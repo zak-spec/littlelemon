@@ -3,6 +3,7 @@ from .models import Category, MenuItem, Cart, Order, OrderItem
 from .Saneamiento import BleachCleanMixin
 from rest_framework.validators import UniqueValidator
 import bleach
+from django.contrib.auth.models import User, Group
 
 class Categoryserializer(BleachCleanMixin, serializers.ModelSerializer):
     class Meta:
@@ -45,3 +46,42 @@ class OrderItemserializers(BleachCleanMixin, serializers.ModelSerializer):
     class Meta:
         model = OrderItem
         fields = ['id', 'order', 'menuitem', 'quantity', 'unit_price', 'price']
+
+class UserSerializer(serializers.ModelSerializer):
+    groups = serializers.StringRelatedField(many=True, read_only=True)
+    
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'groups', 'is_active']
+        read_only_fields = ['id', 'groups']
+
+class UserCreateSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+    
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'first_name', 'last_name', 'password']
+    
+    def create(self, validated_data):
+        password = validated_data.pop('password')
+        user = User.objects.create(**validated_data)
+        user.set_password(password)
+        user.save()
+        return user
+
+class GroupSerializer(serializers.ModelSerializer):
+    user_count = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Group
+        fields = ['id', 'name', 'user_count']
+    
+    def get_user_count(self, obj):
+        return obj.user_set.count()
+
+class GroupDetailSerializer(serializers.ModelSerializer):
+    users = UserSerializer(source='user_set', many=True, read_only=True)
+    
+    class Meta:
+        model = Group
+        fields = ['id', 'name', 'users']

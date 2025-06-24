@@ -11,6 +11,7 @@ djangorestframework = "*"
 djoser = "*"
 djangorestframework-simplejwt = "*"
 django-environ = "*"
+pillow = "*"
 
 [dev-packages]
 
