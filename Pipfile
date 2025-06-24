@@ -12,6 +12,7 @@ djoser = "*"
 djangorestframework-simplejwt = "*"
 django-environ = "*"
 pillow = "*"
+django-filter = "*"
 
 [dev-packages]
 

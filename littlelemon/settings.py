@@ -51,10 +51,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'littlelemonAPI',
+    'django_filters',  # Para filtrado avanzado en APIs
     # 'rest_framework.authtoken',  # REMOVIDO: Ya no usas TokenAuthentication
     # 'djoser',  # REMOVIDO: Ya tienes implementación propia de registro/auth
     'rest_framework_simplejwt', 
     'rest_framework_simplejwt.token_blacklist',  # Para manejar tokens JWT revocados
+    # 'corsheaders',  # Para manejar CORS
+    'bleach',  # Para sanitizar entradas de usuario
 ]
 
 MIDDLEWARE = [
@@ -181,7 +184,7 @@ REST_FRAMEWORK = {
 # ===== CONFIGURACIÓN JWT FINAL =====
 SIMPLE_JWT = {
     # Usar valor del .env (1 minuto para desarrollo)
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=10),
     
     # Duración del refresh token: 7 días
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
